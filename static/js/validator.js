@@ -20,22 +20,20 @@ var App = Backbone.View.extend({
     el: '.my-container',
     events: {
         'touchend .num-pad .letter_box' : function(evt) {
-            var $tgt = $(evt.currentTarget);
-            this.addNum($tgt.text());
-            $tgt.css({
-                'background-color' : 'white'
-            });
-            _.delay(function() {
-                $tgt.css({
-                    'background-color' : ''
-                });
-            }, 300);
+            this.click = false;
+            this.clickEvt(evt);
+        },
+        'click .num-pad .letter_box' : function(evt) {
+            if(this.click) {
+                this.clickEvt(evt);
+            }
         }
     },
     initialize: function() {
         var app = this;
         this.timeout = 0;
         this.paused = false;
+        this.click = true;
         this.code = new Code();
         this.listenTo(this.code, 'codeatmax', function(code) {
             this.validate(code);
@@ -47,10 +45,38 @@ var App = Backbone.View.extend({
             });
         });
     },
+    clickEvt: function(evt) {
+        var $tgt = $(evt.currentTarget);
+        this.addNum($tgt.text());
+        $tgt.css({
+            'background-color' : 'white'
+        });
+        _.delay(function() {
+            $tgt.css({
+                'background-color' : ''
+            });
+        }, 300);
+    },
     render: function() {
+        var app = this;
         this.$message = this.$('.status span');
         this.$display = this.$('.display');
         this.$numpad = this.$('.num-pad');
+        $(window).on('keyup', function(evt) {
+            var num = -1,
+            key = evt.which;
+            if(48 <= key && key <= 57) {
+                num = key - 48;
+            } else if( 96 <= key && key <= 105) {
+                num = key - 96;
+            }
+            if(num > -1) {
+                app.addNum(num);
+            }
+        });
+        $(window).on('touchstart touchmove', function(evt) {
+            evt.preventDefault();
+        });
         return this;
     },
     addNum: function(num) {
