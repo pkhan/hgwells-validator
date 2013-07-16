@@ -87,10 +87,10 @@ var App = Backbone.View.extend({
     },
     validate: function(code) {
         if(_.indexOf(validCodes, code) > -1) {
-            this.$message.text('CORRECT')
+            this.$message.text('VALID')
             .removeClass('wrong');
         } else {
-            this.$message.text('WRONG')
+            this.$message.text('INVALID')
             .addClass('wrong');
         }
         this.pause();
